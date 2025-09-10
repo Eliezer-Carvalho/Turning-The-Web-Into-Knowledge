@@ -12,6 +12,9 @@ def RESULTADOS(soup):
 
     hum = soup.find_all('div', attrs = {'id': re.compile('^g_1_')})
 
+    resultados_finais = []
+
+
     for jogos in hum:    
         resultados = jogos.get_text(strip = True).replace(" ", "").lower() #STRIP extrai o texto sem espaços no inicio e no fim #REPLACE remove todos os espaços do texto " " substitui para ""
     #print(resultados)
@@ -34,7 +37,10 @@ def RESULTADOS(soup):
             if resultado:
 
                 golos1, golos2 = resultado.groups() #cria uma tupla ou seja separa cada número golos1 = (\d{1,2}) e golos2 = (\d{1,2})
-                return equipa_casa, equipa_fora, golos1, golos2
+                resultados_finais.append((equipa_casa, equipa_fora, golos1, golos2))
+
+
+    return resultados_finais
 
     
 
@@ -83,9 +89,9 @@ with sync_playwright() as p:
     clubes = ['Rio Ave', 'Braga', 'Santa Clara', 'Estrela', 'Alverca', 'Benfica', 'Tondela', 'Estoril', 'Sporting CP',
     'FC Porto', 'AFS', 'Famalicao', 'Vitoria Guimaraes', 'Arouca', 'Casa Pia', 'Nacional', 'Gil Vicente', 'Moreirense']
 
-    soup = BeautifulSoup(soup_resultados, 'html.parser')
+    
 
-    hum = soup.find(id = 'live-table')
+    hum = soup_resultados.find(id = 'live-table')
 
     ok = hum.find_all('a')
 
@@ -93,6 +99,52 @@ with sync_playwright() as p:
     for links in ok:
         href = links.get('href')
         if href and 'https://www.flashscore.pt/jogo/' in href:
+                       
+            page.goto(href)
+            page.wait_for_load_state('networkidle')  # espera carregar a página
+        
+        # Pega o conteúdo da página do jogo individual
+            html_jogo = page.content()
+            soup_jogo = BeautifulSoup(html_jogo, 'html.parser')
+        
+        # Extrai o resultado desse jogo
+            resultados_finais = RESULTADOS(soup_jogo)  # aqui deve retornar só 1 resultado (ou nenhum)
+        
+        # Clica na aba Estatísticas
+            page.click("[data-testid='wcl-tab']:has-text('Estatísticas')")
+            page.wait_for_timeout(random.uniform(2000, 2800))
+        
+        # Pega o html da aba Estatísticas
+            html_estatísticas = page.content()
+            soup_estatísticas = BeautifulSoup(html_estatísticas, 'html.parser')
+
+            estatísticas_finais = ESTATÍSTICAS(soup_estatísticas)
+        
+            if resultados_finais and estatísticas_finais:
+            # resultados_finais é lista, mas aqui deve ter só 1 jogo
+                for resultado in resultados_finais:
+                    equipa_casa, equipa_fora, golos1, golos2 = resultado
+                    print(f"\n{equipa_casa} vs {equipa_fora} : {golos1} - {golos2}")
+                    print("Estatísticas do jogo:\n-----------------------------------")
+
+                    for texto, numero_inicio, numero_fim in estatísticas_finais:
+                        print(f'{texto} --> {numero_inicio} : {numero_fim}')
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+'''
 
             page.goto(href)
             page.click("[data-testid='wcl-tab']:has-text('Estatísticas')")
@@ -103,16 +155,12 @@ with sync_playwright() as p:
             resultados_finais = RESULTADOS(soup_resultados)
             estatísticas_finais = ESTATÍSTICAS(soup_estatísticas)
             if resultados_finais and estatísticas_finais:
-                equipa_casa, equipa_fora, golos1, golos2 = resultados_finais
                  
-                print (f"{equipa_casa} vs {equipa_fora} : {golos1} - {golos2}")
-                print ("\n Estatísticas do jogo: \n")
+                for resultado in resultados_finais:
+                    equipa_casa, equipa_fora, golos1, golos2 = resultado
+                    print (f"\n{equipa_casa} vs {equipa_fora} : {golos1} - {golos2}")
+                    print ("Estatísticas do jogo: \n"
+                    "-----------------------------------")
 
                 for texto, numero_inicio, numero_fim in estatísticas_finais:
-                    print (f'{texto} --> {numero_inicio} : {numero_fim} ')
-                       
-            
-        
-
-
-    
+                    print (f'{texto} --> {numero_inicio} : {numero_fim}')'''
