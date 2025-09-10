@@ -2,6 +2,15 @@ from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 import random
 import re
+import pandas as pd
+
+data_jogos = []
+equipa_casa = []
+equipa_fora = []
+golos_casa = []
+golos_fora = []
+
+estatísticas = []
 
 
 
@@ -9,8 +18,6 @@ def MAIN(href, page):
 
    
         '--------------------------------------------------------------------------------WEB-SCRAPING-RESULTADOS-----------------------------------------------------------------------------------'
-
-
 
         page.goto(href)
         page.wait_for_timeout(random.uniform(1500, 3000))
@@ -21,21 +28,27 @@ def MAIN(href, page):
 
     
         data = soup.find(class_ = 'duelParticipant__startTime').get_text(strip = True)
+        data_jogos.append(data)
 
+        casa = soup.find('div', attrs = {'class': 'duelParticipant__home'}).get_text(strip = True)
+        equipa_casa.append(casa)
 
-        equipa_casa = soup.find('div', attrs = {'class': 'duelParticipant__home'}).get_text(strip = True)
-
-        equipa_fora = soup.find('div', attrs = {'class': 'duelParticipant__away'}).get_text(strip = True)
+        fora = soup.find('div', attrs = {'class': 'duelParticipant__away'}).get_text(strip = True)
+        equipa_fora.append(fora)
 
         golos = soup.find(class_ = 'detailScore__wrapper')
         if golos:
             span = golos.find_all('span')
             if len(span) >= 2:
-                golos_casa = span[0].get_text(strip = True)
-                golos_fora = span[2].get_text(strip = True)
+                golos_1 = span[0].get_text(strip = True)
+                golos_casa.append(golos_1)
+                golos_2 = span[2].get_text(strip = True)
+                golos_fora.append(golos_2)
 
-                print (f'{data} - {equipa_casa} vs {equipa_fora}  {golos_casa} - {golos_fora}')
-                print ('Estatísticas: \n ')
+        
+
+
+        '--------------------------------------------------------------------------------WEB-SCRAPING-ESTATÍSTICAS-----------------------------------------------------------------------------------'
 
         estatísticas_aba = soup.find('a', attrs = {'data-analytics-alias': 'match-statistics'})
         sumário = estatísticas_aba.get('href')
@@ -48,6 +61,7 @@ def MAIN(href, page):
 
         soup = BeautifulSoup(html_2, 'html.parser')
 
+        estatísticas_dicionário = {}
         sections = soup.find_all('div', class_ = 'section')
 
         for sec in sections:
@@ -64,18 +78,18 @@ def MAIN(href, page):
 
                 if match:
                     numero_inicio, texto, numero_fim = match.groups()
-                    print (texto.strip(), numero_inicio, numero_fim)
+                    estatísticas_dicionário[texto.strip()] = f'{numero_inicio} -  {numero_fim}'
+        
+        estatísticas.append(estatísticas_dicionário)
+
             
         
-'--------------------------------------------------------------------------------FIM-------------------------------------------------------------------------------------------------'
+'--------------------------------------------------------------------------------MAIN-------------------------------------------------------------------------------------------------'
 
 with sync_playwright() as p:
     browser = p.chromium.launch(headless = False)
     context = browser.new_context()
     page = context.new_page()
-
-
-
 
 
     page.goto("https://www.flashscore.pt/futebol/portugal/liga-portugal-betclic/resultados/")
@@ -84,8 +98,6 @@ with sync_playwright() as p:
     soup_resultados = BeautifulSoup(html_resultados, 'html.parser')
 
 
-    
-    
 
     hum = soup_resultados.find(id = 'live-table')
 
@@ -94,5 +106,19 @@ with sync_playwright() as p:
     for links in ok:
         href = links.get('href')
         if href and 'https://www.flashscore.pt/jogo/futebol' in href:
-             MAIN(href = href, page = page)
-            
+            MAIN(href = href, page = page)
+    
+
+df_base = pd.DataFrame({
+     'DATA' : data_jogos,
+     'CASA' : equipa_casa,
+     'FORA' : equipa_fora,
+     'GOLOS_CASA' : golos_casa,
+     'GOLOS_FORA' : golos_fora,
+})
+
+df_estatísticas = pd.DataFrame(estatísticas)
+
+df_final = pd.concat([df_base, df_estatísticas], axis = 1)
+
+print (df_final)
