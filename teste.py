@@ -23,9 +23,9 @@ def MAIN(href, page):
         data = soup.find(class_ = 'duelParticipant__startTime').get_text(strip = True)
 
 
-        equipa_casa = soup.find('div', attrs = {'class_': 'duelParticipant__home'}).get_text(strip = True)
+        equipa_casa = soup.find('div', attrs = {'class': 'duelParticipant__home'}).get_text(strip = True)
 
-        equipa_fora = soup.find('div', attrs = {'class_': 'duelParticipant__away'}).get_text(strip = True)
+        equipa_fora = soup.find('div', attrs = {'class': 'duelParticipant__away'}).get_text(strip = True)
 
         golos = soup.find(class_ = 'detailScore__wrapper')
         if golos:
@@ -35,7 +35,7 @@ def MAIN(href, page):
                 golos_fora = span[2].get_text(strip = True)
 
                 print (f'{data} - {equipa_casa} vs {equipa_fora}  {golos_casa} - {golos_fora}')
-                print ('Esttísticas: ')
+                print ('Estatísticas: \n ')
 
         estatísticas_aba = soup.find('a', attrs = {'data-analytics-alias': 'match-statistics'})
         sumário = estatísticas_aba.get('href')
