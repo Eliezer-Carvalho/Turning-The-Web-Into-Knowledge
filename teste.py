@@ -4,8 +4,9 @@ import random
 import re
 import pandas as pd
 import gspread
-from gspread import get_as_dataframe, set_with_dataframe
-from google.outh2.service_account import Credentials
+from gspread_dataframe import get_as_dataframe, set_with_dataframe
+
+from google.oauth2.service_account import Credentials
 
 
 
@@ -104,7 +105,7 @@ def MAIN(href, page):
         
 '--------------------------------------------------------------------------------MAIN-------------------------------------------------------------------------------------------------'
 
-with sync_playwright() as p:
+'''with sync_playwright() as p:
     browser = p.chromium.launch(headless = False)
     context = browser.new_context()
     page = context.new_page()
@@ -126,8 +127,23 @@ with sync_playwright() as p:
    
     href = teste.get('href')
     if href and 'https://www.flashscore.pt/jogo/futebol' in href:
-        MAIN(href = href, page = page)
+        MAIN(href = href, page = page)'''
     
-print (estatísticas_finais)
+
+scopes = [
+    'https://www.googleapis.com/auth/spreadsheets'
+]
+
+credenciais = Credentials.from_service_account_file('credentials.json', scopes = scopes)
+aut = gspread.authorize(credenciais)
+key = aut.open_by_key('1nJERI9CLGEzQR6YlAprIzVrzq01IeMB4VQUCKDgQQRg')
+
+EXCEL = key.get_worksheet()
+
+print (EXCEL)
+
+
+
+#print (estatísticas_finais)
 
 
