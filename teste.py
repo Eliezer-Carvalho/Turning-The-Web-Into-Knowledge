@@ -3,6 +3,20 @@ from bs4 import BeautifulSoup
 import random
 import re
 import pandas as pd
+import gspread
+from gspread import get_as_dataframe, set_with_dataframe
+from google.outh2.service_account import Credentials
+
+
+
+
+
+
+
+
+
+
+
 
 data_jogos = []
 equipa_casa = []
@@ -62,6 +76,7 @@ def MAIN(href, page):
         soup = BeautifulSoup(html_2, 'html.parser')
 
         estatísticas_dicionário = {}
+
         sections = soup.find_all('div', class_ = 'section')
 
         for sec in sections:
@@ -82,8 +97,7 @@ def MAIN(href, page):
                         estatísticas_dicionário[texto.strip()] = f'{numero_inicio} -  {numero_fim}'
                         print (f'{texto.strip()} : {numero_inicio} -  {numero_fim}')
                         #print(estatísticas_dicionário)
-
-        estatísticas_finais.append(estatísticas_dicionário)
+                        estatísticas_finais.append({'casa': numero_inicio, 'fora': numero_fim})
         
 
             
@@ -106,26 +120,14 @@ with sync_playwright() as p:
     hum = soup_resultados.find(id = 'live-table')
 
     ok = hum.find_all('a')
+
+    teste = random.choice(ok)
     
-    for links in ok:
-        href = links.get('href')
-        if href and 'https://www.flashscore.pt/jogo/futebol' in href:
-            MAIN(href = href, page = page)
+   
+    href = teste.get('href')
+    if href and 'https://www.flashscore.pt/jogo/futebol' in href:
+        MAIN(href = href, page = page)
     
-'''
-df_base = pd.DataFrame({
-     'DATA' : data_jogos,
-     'CASA' : equipa_casa,
-     'FORA' : equipa_fora,
-     'GOLOS_CASA' : golos_casa,
-     'GOLOS_FORA' : golos_fora,
-})
+print (estatísticas_finais)
 
 
-#NÃO ADD ESTATÍSTICAS! RESOLVER! SOLUÇÃO PARA ESTATÍSTICAS CASA / FORA ???
-
-df_estatísticas = pd.DataFrame(estatísticas)
-
-df_final = pd.concat([df_base, df_estatísticas], axis = 1)
-
-print (df_final)'''
