@@ -5,16 +5,7 @@ import re
 import pandas as pd
 import gspread
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
-
 from google.oauth2.service_account import Credentials
-
-
-
-
-
-
-
-
 
 
 
@@ -138,9 +129,23 @@ credenciais = Credentials.from_service_account_file('credentials.json', scopes =
 aut = gspread.authorize(credenciais)
 key = aut.open_by_key('1nJERI9CLGEzQR6YlAprIzVrzq01IeMB4VQUCKDgQQRg')
 
-EXCEL = key.get_worksheet()
+EXCEL = key.get_worksheet(0)
 
-print (EXCEL)
+df = get_as_dataframe(EXCEL)
+
+df_estatísticas = pd.DataFrame(estatísticas_finais)
+
+coluna_date = df_estatísticas.get_loc('DATE' + 1)
+
+
+
+add_data = df_estatísticas['DATE'] = data_jogos
+add_home_team = df_estatísticas['HOME_TEAM'] = equipa_casa
+
+
+df_final = pd.concat([df, df_estatísticas], axis = 0)
+
+print (df_final)
 
 
 
