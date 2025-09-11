@@ -10,7 +10,7 @@ equipa_fora = []
 golos_casa = []
 golos_fora = []
 
-estatísticas = []
+estatísticas_finais = []
 
 
 
@@ -78,9 +78,13 @@ def MAIN(href, page):
 
                 if match:
                     numero_inicio, texto, numero_fim = match.groups()
-                    estatísticas_dicionário[texto.strip()] = f'{numero_inicio} -  {numero_fim}'
+                    if texto.strip() not in estatísticas_dicionário:
+                        estatísticas_dicionário[texto.strip()] = f'{numero_inicio} -  {numero_fim}'
+                        print (f'{texto.strip()} : {numero_inicio} -  {numero_fim}')
+                        #print(estatísticas_dicionário)
+
+        estatísticas_finais.append(estatísticas_dicionário)
         
-        estatísticas.append(estatísticas_dicionário)
 
             
         
@@ -108,7 +112,7 @@ with sync_playwright() as p:
         if href and 'https://www.flashscore.pt/jogo/futebol' in href:
             MAIN(href = href, page = page)
     
-
+'''
 df_base = pd.DataFrame({
      'DATA' : data_jogos,
      'CASA' : equipa_casa,
@@ -117,8 +121,11 @@ df_base = pd.DataFrame({
      'GOLOS_FORA' : golos_fora,
 })
 
+
+#NÃO ADD ESTATÍSTICAS! RESOLVER! SOLUÇÃO PARA ESTATÍSTICAS CASA / FORA ???
+
 df_estatísticas = pd.DataFrame(estatísticas)
 
 df_final = pd.concat([df_base, df_estatísticas], axis = 1)
 
-print (df_final)
+print (df_final)'''
