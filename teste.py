@@ -61,12 +61,13 @@ def MAIN(href, page):
 
     estatísticas_aba = soup.find('a', attrs = {'data-analytics-alias': 'match-statistics'})
     sumário = estatísticas_aba.get('href')
+    
     link = f'https://www.flashscore.pt{sumário}'
-
+    
    
-
+    page.wait_for_timeout(random.uniform(1500, 3000))
     page.goto(link)
-    page.wait_for_timeout(random.uniform(2000, 3000))
+    page.wait_for_timeout(random.uniform(1500, 3000))
 
     html_2 = page.content()
 
@@ -102,7 +103,7 @@ def MAIN(href, page):
                         estatísticas_finais.append(numero_fim)
 
     return estatísticas_finais
-                    
+                   
 
    
                         
@@ -141,16 +142,13 @@ with sync_playwright() as p:
     hum = soup_resultados.find(id = 'live-table')
 
     ok = hum.find_all('a')
+    
 
 
     for links in ok:
         href = links.get('href')
-        if href and 'https://www.flashscore.pt/jogo/futebol' in href:
+        if href and 'https://www.flashscore.pt/jogo/futebol' in href:       
             ESTAT = MAIN(href = href, page = page)
             df.loc[len(df)] = ESTAT
-
-
-print (df)
-
-
+        
 set_with_dataframe(EXCEL, df)
