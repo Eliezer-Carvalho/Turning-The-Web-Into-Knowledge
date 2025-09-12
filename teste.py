@@ -50,7 +50,13 @@ def MAIN(href, page):
                 golos_casa.append(golos_1)
                 golos_2 = span[2].get_text(strip = True)
                 golos_fora.append(golos_2)
+                estatísticas_finais.append({data})
+                estatísticas_finais.append({casa})
+                estatísticas_finais.append({fora})
+                estatísticas_finais.append({golos_1})
+                estatísticas_finais.append({golos_2})
 
+                
         
 
 
@@ -89,7 +95,9 @@ def MAIN(href, page):
                         estatísticas_dicionário[texto.strip()] = f'{numero_inicio} -  {numero_fim}'
                         #print (f'{texto.strip()} : {numero_inicio} -  {numero_fim}')
                         #print(estatísticas_dicionário)
-                        estatísticas_finais.append({'casa': numero_inicio, 'fora': numero_fim})
+                        estatísticas_finais.append({numero_inicio})
+                        estatísticas_finais.append({numero_fim})
+                        
         
 
             
@@ -107,6 +115,13 @@ key = aut.open_by_key('1nJERI9CLGEzQR6YlAprIzVrzq01IeMB4VQUCKDgQQRg')
 EXCEL = key.get_worksheet(0)
 
 df = get_as_dataframe(EXCEL)
+
+'''
+colunas = (len(df.columns)) + 2
+print (len(df.columns))
+print (colunas)
+#print (df.columns)'''
+
 
 
 with sync_playwright() as p:
@@ -126,47 +141,55 @@ with sync_playwright() as p:
 
     ok = hum.find_all('a')
 
-    for linka in ok:
-        href = linka.get('href')
-        if href and 'https://www.flashscore.pt/jogo/futebol' in href:
-            MAIN(href = href, page = page)
+    hum = random.choice(ok)
 
-
-linhas = len(df)
-print (linhas)
-
-df['DATE'] = data_jogos
-df['HOME_TEAM'] = equipa_casa
-df['AWAY_TEAM'] = equipa_fora
-df['HOME_GOALS'] = golos_casa
-df['AWAY_GOALS'] = golos_fora
-
-
-print (df)
     
+    href = hum.get('href')
+    if href and 'https://www.flashscore.pt/jogo/futebol' in href:
+        MAIN(href = href, page = page)
 
+
+
+print (len(df.columns))
+print (len(estatísticas_finais))
+
+
+
+#df.loc[(len(df.columns))] = estatísticas_finais
+#print (df)
+
+
+
+#print (estatísticas_finais)
+
+
+#df.loc[comprimento] = estatísticas_finais
+
+
+
+#linhas = len(df)
+#print (linhas)
 '''
-scopes = [
-    'https://www.googleapis.com/auth/spreadsheets'
-]
+df_novo = pd.DataFrame ({
+                'DATE': data_jogos, 
+                'HOME_TEAM': equipa_casa, 
+                'AWAY_TEAM': equipa_fora, 
+                'HOME_GOALS': golos_casa,
+                'AWAY_GOALS': golos_fora
+                })
 
-credenciais = Credentials.from_service_account_file('credentials.json', scopes = scopes)
-aut = gspread.authorize(credenciais)
-key = aut.open_by_key('1nJERI9CLGEzQR6YlAprIzVrzq01IeMB4VQUCKDgQQRg')
+df = pd.concat([df, df_novo], ignore_index = True)
 
-EXCEL = key.get_worksheet(0)
+print (estatísticas_finais)
 
-df = get_as_dataframe(EXCEL)
 
-add_data = df['DATE'] = data_jogos
-add_home_team = df['HOME_TEAM'] = equipa_casa
-add_away_team = df['AWAY_TEAM'] = equipa_fora
-add_home_goals = df['HOME_GOALS'] = golos_casa
-add_away_goals = df['AWAY_GOALS'] = golos_fora
+comprimento = (len(df.columns))
 
+df.loc[comprimento] = estatísticas_finais'''
 
 print (df)
 
-#print (estatísticas_finais)'''
+
+
 
 
