@@ -33,7 +33,7 @@ def MAIN(href, page):
     data = soup.find(class_ = 'duelParticipant__startTime').get_text(strip = True)
 
     data_dt = datetime.strptime(data, "%d.%m.%Y %H:%M")
-    data_formatada = data_dt.strftime("%Y-%m-%d %H:%M")  
+    data_formatada = data_dt.strftime("%d-%m-%Y")  
     estatísticas_finais.append(data_formatada)
 
 
@@ -77,7 +77,7 @@ def MAIN(href, page):
     
     dict = {}
 
-    ignore = ['Cartões vermelhos', 'Golos de cabeça']
+    ignore = ['Cartões vermelhos', 'Golos de cabeça', 'Cartões amarelos']
 
     for sec in sections:
     
@@ -125,7 +125,6 @@ df = get_as_dataframe(EXCEL, dtype = object)
 
 
 
-
 with sync_playwright() as p:
     browser = p.chromium.launch(headless = False)
     context = browser.new_context()
@@ -143,12 +142,26 @@ with sync_playwright() as p:
 
     ok = hum.find_all('a')
     
-
+    data_recente = datetime.strptime(df['DATE'].max(), '%m/%d/%Y').date()
+    print (data_recente)
 
     for links in ok:
         href = links.get('href')
         if href and 'https://www.flashscore.pt/jogo/futebol' in href:       
             ESTAT = MAIN(href = href, page = page)
-            df.loc[len(df)] = ESTAT
-        
+
+            date_date = datetime.strptime(ESTAT[0], "%d-%m-%Y").date()
+            
+            print (date_date)
+            
+            if date_date > data_recente:
+                df.loc[len(df)] = ESTAT
+                print (df)
+            if date_date <= data_recente:
+                print ('HUM')
+                break
+
+
 set_with_dataframe(EXCEL, df)
+
+  
