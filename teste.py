@@ -123,8 +123,6 @@ EXCEL = key.get_worksheet(0)
 df = get_as_dataframe(EXCEL)
 
 
-linhas = (len(df.columns)) - 2
-print (linhas)
 
 
 with sync_playwright() as p:
@@ -144,52 +142,12 @@ with sync_playwright() as p:
 
     ok = hum.find_all('a')
 
-    hum = random.sample(ok, 1)
-
-    for links in hum:
+    for links in ok:
         href = links.get('href')
         if href and 'https://www.flashscore.pt/jogo/futebol' in href:
             MAIN(href = href, page = page)
         
-print (len(df.columns))
-print (len(estatísticas_finais))
 
+df.loc[len(df)] = estatísticas_finais
 
-df.loc[linhas] = estatísticas_finais
-print (df)
-
-
-
-#print (estatísticas_finais)
-
-
-#df.loc[comprimento] = estatísticas_finais
-
-
-
-#linhas = len(df)
-#print (linhas)
-'''
-df_novo = pd.DataFrame ({
-                'DATE': data_jogos, 
-                'HOME_TEAM': equipa_casa, 
-                'AWAY_TEAM': equipa_fora, 
-                'HOME_GOALS': golos_casa,
-                'AWAY_GOALS': golos_fora
-                })
-
-df = pd.concat([df, df_novo], ignore_index = True)
-
-print (estatísticas_finais)
-
-
-comprimento = (len(df.columns))
-
-df.loc[comprimento] = estatísticas_finais'''
-
-#print (df)
-
-
-
-
-
+set_with_dataframe(EXCEL, df)
