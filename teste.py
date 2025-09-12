@@ -97,9 +97,7 @@ def MAIN(href, page):
                         #print(estatísticas_dicionário)
                         estatísticas_finais.append({numero_inicio})
                         estatísticas_finais.append({numero_fim})
-                        
         
-
             
         
 '--------------------------------------------------------------------------------MAIN-------------------------------------------------------------------------------------------------'
@@ -141,17 +139,16 @@ with sync_playwright() as p:
 
     ok = hum.find_all('a')
 
-    hum = random.choice(ok)
+    hum = random.sample(ok, 4)
 
-    
-    href = hum.get('href')
-    if href and 'https://www.flashscore.pt/jogo/futebol' in href:
-        MAIN(href = href, page = page)
+    for links in hum:
+        href = links.get('href')
+        if href and 'https://www.flashscore.pt/jogo/futebol' in href:
+            MAIN(href = href, page = page)
 
 
 
-print (len(df.columns))
-print (len(estatísticas_finais))
+
 
 
 
@@ -187,7 +184,7 @@ comprimento = (len(df.columns))
 
 df.loc[comprimento] = estatísticas_finais'''
 
-print (df)
+#print (df)
 
 
 
