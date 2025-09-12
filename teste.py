@@ -6,17 +6,12 @@ import pandas as pd
 import gspread
 from gspread_dataframe import get_as_dataframe, set_with_dataframe
 from google.oauth2.service_account import Credentials
+from datetime import datetime
 
 
 
 
-'''data_jogos = []
-equipa_casa = []
-equipa_fora = []
-golos_casa = []
-golos_fora = []'''
 
-estatísticas_finais = []
 
 
 
@@ -24,6 +19,8 @@ def MAIN(href, page):
 
    
     '--------------------------------------------------------------------------------WEB-SCRAPING-RESULTADOS-----------------------------------------------------------------------------------'
+
+    estatísticas_finais = []
 
     page.goto(href)
     page.wait_for_timeout(random.uniform(1500, 3000))
@@ -34,7 +31,11 @@ def MAIN(href, page):
 
     
     data = soup.find(class_ = 'duelParticipant__startTime').get_text(strip = True)
-    estatísticas_finais.append(data)
+
+    data_dt = datetime.strptime(data, "%d.%m.%Y %H:%M")
+    data_formatada = data_dt.strftime("%Y-%m-%d %H:%M")  
+    estatísticas_finais.append(data_formatada)
+
 
     casa = soup.find('div', attrs = {'class': 'duelParticipant__home'}).get_text(strip = True)
     estatísticas_finais.append(casa)
@@ -63,9 +64,6 @@ def MAIN(href, page):
     link = f'https://www.flashscore.pt{sumário}'
 
    
-
-
-
 
     page.goto(link)
     page.wait_for_timeout(random.uniform(2000, 3000))
@@ -102,6 +100,8 @@ def MAIN(href, page):
                     if dict:
                         estatísticas_finais.append(numero_inicio)
                         estatísticas_finais.append(numero_fim)
+
+    return estatísticas_finais
                     
 
    
@@ -145,9 +145,8 @@ with sync_playwright() as p:
     for links in ok:
         href = links.get('href')
         if href and 'https://www.flashscore.pt/jogo/futebol' in href:
-            MAIN(href = href, page = page)
-        
+            ESTAT = MAIN(href = href, page = page)
+            df.loc[len(df)] = ESTAT
 
-df.loc[len(df)] = estatísticas_finais
 
 set_with_dataframe(EXCEL, df)
