@@ -10,11 +10,11 @@ from google.oauth2.service_account import Credentials
 
 
 
-data_jogos = []
+'''data_jogos = []
 equipa_casa = []
 equipa_fora = []
 golos_casa = []
-golos_fora = []
+golos_fora = []'''
 
 estatísticas_finais = []
 
@@ -34,27 +34,23 @@ def MAIN(href, page):
 
     
     data = soup.find(class_ = 'duelParticipant__startTime').get_text(strip = True)
-    data_jogos.append(data)
+    estatísticas_finais.append(data)
 
     casa = soup.find('div', attrs = {'class': 'duelParticipant__home'}).get_text(strip = True)
-    equipa_casa.append(casa)
+    estatísticas_finais.append(casa)
 
     fora = soup.find('div', attrs = {'class': 'duelParticipant__away'}).get_text(strip = True)
-    equipa_fora.append(fora)
+    estatísticas_finais.append(fora)
 
     golos = soup.find(class_ = 'detailScore__wrapper')
     if golos:
         span = golos.find_all('span')
         if len(span) >= 2:
             golos_1 = span[0].get_text(strip = True)
-            golos_casa.append(golos_1)
+            estatísticas_finais.append(golos_1)
             golos_2 = span[2].get_text(strip = True)
-            golos_fora.append(golos_2)
-            estatísticas_finais.append({data})
-            estatísticas_finais.append({casa})
-            estatísticas_finais.append({fora})
-            estatísticas_finais.append({golos_1})
-            estatísticas_finais.append({golos_2})
+            estatísticas_finais.append(golos_2)
+            
 
                 
         
@@ -62,53 +58,51 @@ def MAIN(href, page):
 
         '--------------------------------------------------------------------------------WEB-SCRAPING-ESTATÍSTICAS-----------------------------------------------------------------------------------'
 
-        estatísticas_aba = soup.find('a', attrs = {'data-analytics-alias': 'match-statistics'})
-        sumário = estatísticas_aba.get('href')
-        link = f'https://www.flashscore.pt{sumário}'''
+    estatísticas_aba = soup.find('a', attrs = {'data-analytics-alias': 'match-statistics'})
+    sumário = estatísticas_aba.get('href')
+    link = f'https://www.flashscore.pt{sumário}'
 
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless = False)
-            context = browser.new_context()
-            page = context.new_page()
+   
 
 
 
 
+    page.goto(link)
+    page.wait_for_timeout(random.uniform(2000, 3000))
 
-            page.goto(link)
-            page.wait_for_timeout(random.uniform(2000, 3000))
+    html_2 = page.content()
 
-            html_2 = page.content()
+    soup = BeautifulSoup(html_2, 'html.parser')
 
-            soup = BeautifulSoup(html_2, 'html.parser')
-
-            sections = soup.find_all('div', class_ = 'section')
+    sections = soup.find_all('div', class_ = 'section')
     
-            dict = {}
+    dict = {}
 
-            ignore = ['Cartões vermelhos', 'Golos de cabeça']
+    ignore = ['Cartões vermelhos', 'Golos de cabeça']
 
-            for sec in sections:
+    for sec in sections:
     
-                estatísticas = sec.find_all('div', attrs = {'class': "wcl-row_2oCpS"})
+        estatísticas = sec.find_all('div', attrs = {'class': "wcl-row_2oCpS"})
 
 
 
-                for nomes in estatísticas:
-                    final = nomes.text
+        for nomes in estatísticas:
+            final = nomes.text
             #print (final)
-                    if any(item in final for item in ignore):
-                        continue  
+            if any(item in final for item in ignore):
+                continue  
               
-                    hum = re.sub(r"\([^)]*\)", "", final)
-                    match = re.match(r'^([\d%./+-]+)\s*([^\d%./+-]+)\s*([\d%./+-]+)$', hum)
+            hum = re.sub(r"\([^)]*\)", "", final)
+            match = re.match(r'^([\d%./+-]+)\s*([^\d%./+-]+)\s*([\d%./+-]+)$', hum)
             
-                    if match:
-                        numero_inicio, texto, numero_fim = match.groups()
-                        if texto.strip() not in dict:
-                            dict[texto.strip()] = f'{numero_inicio} : {numero_fim}'
-                            estatísticas_finais.append(numero_inicio)
-                            estatísticas_finais.append(numero_fim)
+            if match:
+                numero_inicio, texto, numero_fim = match.groups()
+                if texto.strip() not in dict:
+                    dict[texto.strip()] = f'{numero_inicio} : {numero_fim}'
+                    if dict:
+                        estatísticas_finais.append(numero_inicio)
+                        estatísticas_finais.append(numero_fim)
+                    
 
    
                         
@@ -129,11 +123,8 @@ EXCEL = key.get_worksheet(0)
 df = get_as_dataframe(EXCEL)
 
 
-colunas = (len(df.columns)) + 2
-print (len(df.columns))
-print (colunas)
-#print (df.columns)
-
+linhas = (len(df.columns)) - 2
+print (linhas)
 
 
 with sync_playwright() as p:
@@ -153,29 +144,19 @@ with sync_playwright() as p:
 
     ok = hum.find_all('a')
 
-    hum = random.sample(ok, 2)
+    hum = random.sample(ok, 1)
 
     for links in hum:
         href = links.get('href')
         if href and 'https://www.flashscore.pt/jogo/futebol' in href:
             MAIN(href = href, page = page)
-            
-
-if len(estatísticas_finais) == len(df.columns):
-    df.loc[len(df)] = estatísticas_finais
-
-else:
-    df.fillna(0, inplace = True)
+        
+print (len(df.columns))
+print (len(estatísticas_finais))
 
 
-
+df.loc[linhas] = estatísticas_finais
 print (df)
-
-
-
-
-#df.loc[(len(df.columns))] = estatísticas_finais
-#print (df)
 
 
 
@@ -188,7 +169,7 @@ print (df)
 
 #linhas = len(df)
 #print (linhas)
-
+'''
 df_novo = pd.DataFrame ({
                 'DATE': data_jogos, 
                 'HOME_TEAM': equipa_casa, 
