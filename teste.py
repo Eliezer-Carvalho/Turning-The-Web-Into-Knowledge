@@ -120,7 +120,7 @@ key = aut.open_by_key('1nJERI9CLGEzQR6YlAprIzVrzq01IeMB4VQUCKDgQQRg')
 
 EXCEL = key.get_worksheet(0)
 
-df = get_as_dataframe(EXCEL)
+df = get_as_dataframe(EXCEL, dtype = object)
 
 
 
@@ -142,11 +142,15 @@ with sync_playwright() as p:
 
     ok = hum.find_all('a')
 
+
     for links in ok:
         href = links.get('href')
         if href and 'https://www.flashscore.pt/jogo/futebol' in href:
             ESTAT = MAIN(href = href, page = page)
             df.loc[len(df)] = ESTAT
+
+
+print (df)
 
 
 set_with_dataframe(EXCEL, df)
