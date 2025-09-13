@@ -3,11 +3,7 @@ from bs4 import BeautifulSoup
 import random
 import re
 import pandas as pd
-import gspread
-from gspread_dataframe import get_as_dataframe, set_with_dataframe
-from google.oauth2.service_account import Credentials
 from datetime import datetime
-
 
 
 
@@ -111,18 +107,8 @@ def MAIN(href, page):
         
 '--------------------------------------------------------------------------------MAIN-------------------------------------------------------------------------------------------------'
 
-scopes = [
-    'https://www.googleapis.com/auth/spreadsheets'
-]
 
-credenciais = Credentials.from_service_account_file('credentials.json', scopes = scopes)
-aut = gspread.authorize(credenciais)
-key = aut.open_by_key('1nJERI9CLGEzQR6YlAprIzVrzq01IeMB4VQUCKDgQQRg')
-
-EXCEL = key.get_worksheet(0)
-
-df = get_as_dataframe(EXCEL, dtype = object)
-
+df = pd.read_csv('25_26  - BRASILEIRÃO.csv')
 
 
 with sync_playwright() as p:
@@ -133,6 +119,16 @@ with sync_playwright() as p:
 
     page.goto("https://www.flashscore.pt/futebol/portugal/liga-portugal-betclic/resultados/")
     page.wait_for_timeout(random.uniform(3000, 7000))
+
+    while True:
+        botão_mais_jogos = page.locator('text = Mostrar mais jogos')
+        if botão_mais_jogos.count() == 0:
+            break
+
+        botão_mais_jogos.click()
+        page.wait_for_timeout(random.uniform(1500, 3000))
+
+
     html_resultados = page.content()
     soup_resultados = BeautifulSoup(html_resultados, 'html.parser')
 
@@ -156,12 +152,10 @@ with sync_playwright() as p:
             
             if date_date > data_recente:
                 df.loc[len(df)] = ESTAT
-                print (df)
             if date_date <= data_recente:
-                print ('HUM')
                 break
 
 
-set_with_dataframe(EXCEL, df)
+df.to_csv('25_26  - BRASILEIRÃO.csv', index = False)
 
   
