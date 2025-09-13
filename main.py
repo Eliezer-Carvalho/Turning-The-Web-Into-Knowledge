@@ -146,4 +146,4 @@ with sync_playwright() as p:
             df.loc[len(df)] = ESTAT
         
 
-df.to_csv('25_26  - BRASILEIRÃO.csv', index = False)'''
+df.to_csv('25_26  - BRASILEIRÃO.csv', index = False)
