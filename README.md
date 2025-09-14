@@ -100,3 +100,19 @@ ERROS_THAT_LEAD_TO_GOAL
 EXPECTED_GOALS_ON_TARGET_FACED
 
 GOALS_PREVENTED
+
+
+# Important
+
+To use the code, specific links from the page from which the data is taken are required.
+
+To do so, please contact me.
+
+
+# Libraries Used
+
+Playwright - (https://pypi.org/project/playwright/)
+
+BeautifulSoup - (https://pypi.org/project/beautifulsoup4/)
+
+Pandas - (https://pypi.org/project/pandas/)
