@@ -56,7 +56,7 @@ def MAIN(href, page):
     estatísticas_aba = soup.find('a', attrs = {'data-analytics-alias': 'match-statistics'})
     sumário = estatísticas_aba.get('href')
     
-    link = f'https://www.flashscore.pt{sumário}'
+    link = f''
     
    
     page.wait_for_timeout(random.uniform(1500, 3000))
@@ -107,7 +107,7 @@ def MAIN(href, page):
 
 
 
-df = pd.read_csv('25_26  - BRASILEIRÃO.csv')
+df = pd.read_csv('')   #CSV
 
 
 with sync_playwright() as p:
@@ -116,7 +116,7 @@ with sync_playwright() as p:
     page = context.new_page()
 
 
-    page.goto("https://www.flashscore.pt/futebol/brasil/serie-a/resultados/")
+    page.goto("")  #LINK
     page.wait_for_timeout(random.uniform(3000, 7000))
 
     while True:
@@ -141,9 +141,9 @@ with sync_playwright() as p:
 
     for links in ok:
         href = links.get('href')
-        if href and 'https://www.flashscore.pt/jogo/futebol' in href:       
+        if href and '' in href:       
             ESTAT = MAIN(href = href, page = page)
             df.loc[len(df)] = ESTAT
         
 
-df.to_csv('25_26  - BRASILEIRÃO.csv', index = False)
+df.to_csv('', index = False)  #CSV
