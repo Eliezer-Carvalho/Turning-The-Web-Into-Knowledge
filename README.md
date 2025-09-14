@@ -10,7 +10,7 @@ This repository contains a dataset of football match statistics collected throug
 6. Brasileirão 
 7. Eredivisie 
 8. Liga Portugal 
-9. Liga Profissional
+9. Liga Profesional
 
 
 # Features
