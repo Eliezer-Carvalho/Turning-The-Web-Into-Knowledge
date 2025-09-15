@@ -107,7 +107,7 @@ def MAIN(href, page):
 
 
 
-df = pd.read_csv('')   #CSV
+df = pd.read_csv('')
 
 
 with sync_playwright() as p:
@@ -116,7 +116,7 @@ with sync_playwright() as p:
     page = context.new_page()
 
 
-    page.goto("")  #LINK
+    page.goto("")
     page.wait_for_timeout(random.uniform(3000, 7000))
 
     while True:
@@ -146,4 +146,4 @@ with sync_playwright() as p:
             df.loc[len(df)] = ESTAT
         
 
-df.to_csv('', index = False)  #CSV
+df.to_csv('', index = False)
