@@ -118,4 +118,4 @@ Pandas - (https://pypi.org/project/pandas/)
 
 
 <hr> 
-<div align = 'center'> <h2> &copy; Eliezer Carvalho | All Rights Reserved | November 2025 </h2> </div>
+<div align = 'center'> <h2> &copy; Eliezer Carvalho | All Rights Reserved | September 2025 </h2> </div>
