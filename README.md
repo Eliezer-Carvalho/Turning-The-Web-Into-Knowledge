@@ -115,3 +115,7 @@ Playwright - (https://pypi.org/project/playwright/)
 BeautifulSoup - (https://pypi.org/project/beautifulsoup4/)
 
 Pandas - (https://pypi.org/project/pandas/)
+
+
+<hr> 
+<div align = 'center'> <h2> &copy; Eliezer Carvalho | All Rights Reserved | November 2025 </h2> </div>
