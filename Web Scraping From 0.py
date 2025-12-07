@@ -8,9 +8,6 @@ from datetime import datetime
 
 
 
-
-
-
 def MAIN(href, page):
 
    
@@ -108,7 +105,7 @@ def MAIN(href, page):
 '--------------------------------------------------------------------------------MAIN-------------------------------------------------------------------------------------------------'
 
 
-df = pd.read_csv('25_26  - BRASILEIRÃO.csv')
+df = pd.read_csv('name')
 
 
 with sync_playwright() as p:
@@ -156,6 +153,6 @@ with sync_playwright() as p:
                 break
 
 
-df.to_csv('25_26  - BRASILEIRÃO.csv', index = False)
+df.to_csv('name', index = False)
 
   
