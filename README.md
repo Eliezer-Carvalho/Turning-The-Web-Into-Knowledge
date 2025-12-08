@@ -1,7 +1,7 @@
 <div align = 'center'> <h1> Data is the new oil - <b> Clive Humby </b> </h1> </div>
 
 <p align = "center">
-<img width="600" height="800"  alt="Captura de ecrã 2025-12-07 173043" src="https://github.com/user-attachments/assets/6844c1c2-4568-4a29-b3e3-655784a475ca" />
+<img width="450" height="700"  alt="Captura de ecrã 2025-12-07 173043" src="https://github.com/user-attachments/assets/6844c1c2-4568-4a29-b3e3-655784a475ca" />
 </p>
 
 <h1> Description </h1>
